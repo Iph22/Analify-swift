@@ -377,6 +377,22 @@ public final class Analify {
     struct DeviceInfo: Equatable {
         let os: String
         let device: String  // "mobile", "tablet" or "desktop"
+        var model: String? = Analify.hardwareModel()  // e.g. "iPhone16,1"; Analify shows it as "iPhone 15 Pro"
+    }
+
+    /** The hardware identifier ("iPhone16,1", "Mac14,2"). On the simulator, the simulated device's. */
+    static func hardwareModel() -> String? {
+        if let simulated = ProcessInfo.processInfo.environment["SIMULATOR_MODEL_IDENTIFIER"] { return simulated }
+        #if os(Linux) || os(Windows)
+        return nil
+        #else
+        var info = utsname()
+        uname(&info)
+        let id = withUnsafeBytes(of: &info.machine) { raw in
+            String(decoding: raw.prefix { $0 != 0 }, as: UTF8.self)
+        }
+        return id.isEmpty ? nil : id
+        #endif
     }
 
     static func deviceInfo() -> DeviceInfo {
@@ -408,6 +424,7 @@ public final class Analify {
             let app_version: String?
             let os: String
             let device: String
+            let model: String?
             let events: [Event]
         }
         let encoder = JSONEncoder()
@@ -416,7 +433,7 @@ public final class Analify {
             try c.encode(Analify.iso.string(from: date))
         }
         let batch = Batch(key: config.key, install: config.install, app_version: config.appVersion,
-                          os: device.os, device: device.device, events: events)
+                          os: device.os, device: device.device, model: device.model, events: events)
         return (try? encoder.encode(batch)) ?? Data()
     }
 

@@ -11,7 +11,7 @@ Private, simple analytics for Swift apps: screens, events and signed-in users, o
 **Swift Package Manager:** in Xcode, choose **File → Add Package Dependencies…** and enter this repository's address. Or in `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/Iph22/Analify-swift", from: "0.1.0")
+.package(url: "https://github.com/Iph22/Analify-swift", from: "0.2.0")
 ```
 
 **Or copy one file:** download [Analify.swift](https://analify.dev/sdk/Analify.swift) into your project.
